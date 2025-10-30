@@ -18,3 +18,8 @@ const divide = function (a, b) {
     }
 };
 
+const evaluateExpression = function (operand1, operator, operand2) {
+    const OPERATORS = {"+": add, "-": subtract, "/": divide, "*": multiply};
+    const operation = OPERATORS[operator];
+    return operation(operand1, operand2); 
+}
