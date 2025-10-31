@@ -19,14 +19,31 @@ const divide = function (a, b) {
 };
 
 const evaluateExpression = function (expression) {
-    const operand1 = parseInt(expression[0]);
-    const operator = expression[1];
-    const operand2 = parseInt(expression[2]);
+    const operand1 = parseInt(expression.operand1);
+    const operator = expression.operator;
+    const operand2 = parseInt(expression.operand2);
     const OPERATORS = {"+": add, "-": subtract, "/": divide, "*": multiply};
 
     const operation = OPERATORS[operator];
     return operation(operand1, operand2); 
 };
+
+const generateExpression = function (userInputs) {
+    let expression =  { operand1: "", operator: "", operand2: ""}
+    const OPERATORS = { "+": null, "-": null, "/": null, "*": null};
+    let role = "operand1";
+
+    for (input of userInputs) {
+        if (!(input in OPERATORS)) {
+            expression[role] += input;
+        } else {
+            expression["operator"] = input;
+            role = "operand2";
+        }
+    };
+
+    return expression;
+}
 
 const runCalculator = function () {
     // add click listener to the inputs container
