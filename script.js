@@ -1,18 +1,6 @@
-const add = function (a, b) {
-    if (typeof a === "number" && typeof b === "number") {
-        return a + b;
-    } else {
-
-    }
-};
-
-const subtract = function (a, b) {
-    return a - b;
-};
-
-const multiply = function (a, b) {
-    return a * b;
-};
+const add = (a, b) => a + b;
+const subtract = (a, b) => a - b;
+const multiply = (a, b) => a * b;
 
 const divide = function (a, b) {
     if (b === 0) {
@@ -21,6 +9,8 @@ const divide = function (a, b) {
         return a / b;
     }
 };
+
+const OPERATORS = new Set(["+", "-", "/", "*"]);
 
 
 const evaluateExpression = function (expression) {
@@ -41,11 +31,10 @@ const evaluateExpression = function (expression) {
 
 const generateExpression = function (userInputs) {
     let expression =  { operand1: "", operator: "", operand2: ""}
-    const OPERATORS = { "+": null, "-": null, "/": null, "*": null};
     let role = "operand1";
 
     for (input of userInputs) {
-        if (!(input in OPERATORS)) {
+        if (!(OPERATORS.has(input))) {
             expression[role] += input;
         } else {
             expression["operator"] = input;
@@ -62,53 +51,63 @@ const runCalculator = function () {
     const resultDisplay = document.querySelector("#result");
     const expressionDisplay = document.querySelector("#expression");
 
-    const NUMBERS = {0: null, 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null};
-    const OPERATORS = { "+": null, "-": null, "/": null, "*": null};
+    const NUMBERS = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+    
+    
     let userInputs = [];
     let expression = [];
-    let result = 0;
+    let decimalSwitch = 0;
 
-    calculator.addEventListener("click", (e) => {
+    calculator.addEventListener("click", ( { target }) => {
         
-        if (e.target.type === "button") {
-            const input = e.target;
+        if (target.type === "button") {
+            const inputValue = target.textContent;
             
-            if (input.textContent in NUMBERS) {
-                userInputs.push(input.textContent);
-                resultDisplay.textContent += (input.textContent);
-                expression.push(input.textContent);
-            } else if (input.textContent in OPERATORS) {
-                resultDisplay.textContent = "";
-                if (userInputs.filter(input => input in OPERATORS).length === 1) {
+            if (NUMBERS.has(inputValue)) {
+                userInputs.push(inputValue);
+                expression.push(inputValue);
+                resultDisplay.textContent += (inputValue); // to check
+            } else if (OPERATORS.has(inputValue)) {
+                if (userInputs.at(-1) && !(OPERATORS.has(userInputs.at(-1)))) {
                     const interimResult = evaluateExpression(generateExpression(userInputs));
-                    userInputs = [];
-                    userInputs.push(interimResult);
-                } 
-                userInputs.push(input.textContent);
-                if (expression.at(-1) in OPERATORS) {
+                    userInputs = [interimResult.toString(), inputValue];
+                } else {
+                    userInputs.at(-1) = inputValue;
+                }
+                if (OPERATORS.has(expression.at(-1))) { // to check 
                     expression.pop();
                 }
-                expression.push(input.textContent)
-            } else if (input.textContent === "CE") {
+                resultDisplay.textContent = ""; // to check
+                decimalSwitch = 0;
+                expression.push(inputValue)
+                
+            } else if (inputValue === "CE") {
                 userInputs.pop();
-                resultDisplay.textContent = "";
                 expression.pop();
-            } else if (input.textContent === "AC") {
-                userInputs = []
-                resultDisplay.textContent = "";
+                resultDisplay.textContent = ""; // to check                
+            } else if (inputValue === "AC") {
+                userInputs = [];
                 expression = [];
-            } else if (input.textContent === "=") {
-                result = evaluateExpression(generateExpression(userInputs));
-                userInputs = [result.toString()];
+                resultDisplay.textContent = "";
+                decimalSwitch = 0;
+            } else if (inputValue === "=") {
+                const result = evaluateExpression(generateExpression(userInputs));
                 resultDisplay.textContent = result;
-                if (expression.at(-1) in OPERATORS) {
+                userInputs = [result.toString()];
+                expression.push("=")
+                if (OPERATORS.has(expression.at(-1))) {
                     expression.pop()
                 }
-                expression.push("=")
-            }
+                
+            } else if (inputValue === "." && decimalSwitch === 0) {
+                    userInputs.push(inputValue);
+                    decimalSwitch = 1;
+                    expression.push(inputValue);
+                    resultDisplay.textContent += (inputValue);
+                } 
             console.log(expression);
             expressionDisplay.textContent = expression.join("");
-            expression = input.textContent === "=" ? [...userInputs] : expression;
+            expression = inputValue === "=" ? [...userInputs] : expression;
             
             console.log(userInputs);
 
