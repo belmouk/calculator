@@ -42,26 +42,39 @@ const runCalculator = function () {
         const input = e.target;
 
         if (input.type === "button") {
-            resultDisplay.textContent = input.textContent;
-            if (input.textContent in NUMBERS) {
-                expression[i] += input.textContent;
-                expressionDisplay.textContent = expression.join("");
-            } else if (input.textContent in OPERATORS) {
-                expression[1] = input.textContent;
-                i = 2;
-                expressionDisplay.textContent = expression.join("");
-            } else if (input.textContent === "=") {
+            if (input.textContent === "CE") {
+                resultDisplay.textContent = "0";
+            } else if (input.textContent === "AC") {
                 i = 0;
-                const evaluation = evaluateExpression(expression);
-                expressionDisplay.textContent = expression.join("") + "=";
-                expression = ["", "", ""]
-                expression[0] = evaluation;
-                resultDisplay.textContent = evaluation;
+                expression = ["", "", ""];
+                expressionDisplay.textContent = "";
+                resultDisplay.textContent = "0";
             }
+            
+            else {
+                    resultDisplay.textContent = input.textContent;
+                    if (input.textContent in NUMBERS) {
+                    expression[i] += input.textContent;
+                    expressionDisplay.textContent = expression.join("");
+                } else if (input.textContent in OPERATORS) {
+                    expression[1] = input.textContent;
+                    i = 2;
+                    expressionDisplay.textContent = expression.join("");
+                } else if (input.textContent === "=") {
+                    i = 0;
+                    const evaluation = evaluateExpression(expression);
+                    expressionDisplay.textContent = expression.join("") + "=";
+                    expression = ["", "", ""]
+                    expression[0] = evaluation;
+                    resultDisplay.textContent = evaluation;
+                }
+
+                console.log(input);
+                console.log(input.textContent);
+                console.log(expression);
+            } 
         
-            console.log(input);
-            console.log(input.textContent);
-            console.log(expression);
+
         }
 
     })
